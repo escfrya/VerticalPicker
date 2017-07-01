@@ -140,31 +140,30 @@ open class VerticalPicker: UIView {
     }
     private func updateValueFor(topOffset: CGFloat, isFinal: Bool) {
         progressTopConstraint.constant = topOffset
-        let value = valueBy(topOffset: topOffset)
+        let value = OffsetCalculator.valueBy(topOffset: topOffset, minValue: minValue, maxValue: maxValue, height: bounds.height, reversed: reversed)
         update(value: value, isFinal: isFinal)
     }
     private func update(value: CGFloat, isFinal: Bool) {
         currentValue = value
-        raise(value: value, isFinal: isFinal)
-    }
-    
-    private func updateOffsetFor(value: CGFloat) {
-        progressTopConstraint.constant = topOffsetBy(value: value)
-        update(value: value, isFinal: true)
-    }
-    
-    internal func raise(value: CGFloat, isFinal: Bool) {
         valueChanged?(value, isFinal)
     }
     
-    private func valueBy(topOffset: CGFloat) -> CGFloat {
-        let constrainedTopOffset = min(max(0, topOffset), bounds.height)
-        let constrainedOffset = reversed ? constrainedTopOffset : bounds.height - constrainedTopOffset
-        return minValue + (maxValue - minValue)*constrainedOffset/bounds.height
+    private func updateOffsetFor(value: CGFloat) {
+        progressTopConstraint.constant = OffsetCalculator.topOffsetBy(value: value, minValue: minValue, maxValue: maxValue, height: bounds.height, reversed: reversed)
+        update(value: value, isFinal: true)
     }
-    private func topOffsetBy(value: CGFloat) -> CGFloat {
+}
+
+class OffsetCalculator {
+    class func valueBy(topOffset: CGFloat, minValue: CGFloat, maxValue: CGFloat, height: CGFloat, reversed: Bool) -> CGFloat {
+        let constrainedTopOffset = min(max(0, topOffset), height)
+        let constrainedOffset = reversed ? constrainedTopOffset : height - constrainedTopOffset
+        return minValue + (maxValue - minValue)*constrainedOffset/height
+    }
+    
+    class func topOffsetBy(value: CGFloat, minValue: CGFloat, maxValue: CGFloat, height: CGFloat, reversed: Bool) -> CGFloat {
         let constrainedTopValue = min(max(minValue, value), maxValue)
-        let constrainedValue = (constrainedTopValue - minValue)/(maxValue - minValue)*bounds.height
-        return reversed ? constrainedValue : bounds.height - constrainedValue
+        let constrainedValue = (constrainedTopValue - minValue)/(maxValue - minValue)*height
+        return reversed ? constrainedValue : height - constrainedValue
     }
 }
