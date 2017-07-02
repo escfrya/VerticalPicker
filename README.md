@@ -23,4 +23,11 @@ slider.gradientTopColor = UIColor.white
 slider.gradientBottomColor = UIColor.black
 ```
 
-<img src="https://raw.githubusercontent.com/escfrya/VerticalPicker/master/Images/Example.png" alt="Example screenshot" align="left" />
+## Installation
+
+#### CocoaPods
+
+```ruby
+pod 'VerticalPicker'
+```
+<img src="https://raw.githubusercontent.com/escfrya/VerticalPicker/master/Images/Example.png" alt="Example screenshot" align="left" width=400 />
