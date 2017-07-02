@@ -50,6 +50,19 @@ open class VerticalPicker: UIView {
             updateValueForCurrentTopOffset()
         }
     }
+    open var gradientTopColor: UIColor = UIColor.clear {
+        didSet {
+            updateGradientColors()
+        }
+    }
+    open var gradientBottomColor: UIColor = UIColor.clear {
+        didSet {
+            updateGradientColors()
+        }
+    }
+    private func updateGradientColors() {
+        backgroundGradientLayer.colors = [gradientTopColor.cgColor, gradientBottomColor.cgColor]
+    }
     
     open var backgroundView: UIImageView = {
         var view = UIImageView()
@@ -60,12 +73,20 @@ open class VerticalPicker: UIView {
         var view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        
+        
         return view
     }()
     private lazy var iconView: UIImageView = {
         var view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    private lazy var backgroundGradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor]
+        layer.locations = [0.0, 1.0]
+        return layer
     }()
     
     private var progressTopConstraint: NSLayoutConstraint!
@@ -96,8 +117,15 @@ open class VerticalPicker: UIView {
         addSubview(backgroundView)
         addSubview(progressView)
         addSubview(iconView)
+        backgroundView.layer.addSublayer(backgroundGradientLayer)
         
         addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(VerticalPicker.pan(recognizer:))))
+    }
+    
+    open override var frame: CGRect {
+        didSet {
+            backgroundGradientLayer.frame = bounds
+        }
     }
     
     private func configurateLayout() {
@@ -139,8 +167,9 @@ open class VerticalPicker: UIView {
         updateValueFor(topOffset: progressTopConstraint.constant, isFinal: true)
     }
     private func updateValueFor(topOffset: CGFloat, isFinal: Bool) {
-        progressTopConstraint.constant = topOffset
-        let value = OffsetCalculator.valueBy(topOffset: topOffset, minValue: minValue, maxValue: maxValue, height: bounds.height, reversed: reversed)
+        let constrainedTopOffset = min(max(0, topOffset), bounds.height)
+        progressTopConstraint.constant = constrainedTopOffset
+        let value = OffsetCalculator.valueBy(topOffset: constrainedTopOffset, minValue: minValue, maxValue: maxValue, height: bounds.height, reversed: reversed)
         update(value: value, isFinal: isFinal)
     }
     private func update(value: CGFloat, isFinal: Bool) {
