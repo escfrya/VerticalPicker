@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "VerticalPicker"
-  s.version      = "0.1.2"
+  s.version      = "1.0.0"
   s.summary      = "Vertical slider control."
   s.description  = <<-DESC
 VerticalPicker is control like slider in iOS11 Control Center.
